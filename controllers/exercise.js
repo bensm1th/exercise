@@ -44,6 +44,7 @@ module.exports = {
             .catch(next);   
     } else {
         const massagedProps = prop === "sets" ? { $push: { 'sets': exerciseProps.sets } } : exerciseProps;
+        //I should do a multiple save on the sets, then the next one
         Exercise.findByIdAndUpdate(exerciseId, massagedProps, { new: true })
             .then(exercise => {
                 Exercise.findById(exerciseId)

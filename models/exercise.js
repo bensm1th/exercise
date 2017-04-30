@@ -16,6 +16,7 @@ const ExerciseSchema = new Schema({
         default: 0
     }
 });
+
 ExerciseSchema.virtual('setsNumber')
     .get(function() {
         return this.sets.length;

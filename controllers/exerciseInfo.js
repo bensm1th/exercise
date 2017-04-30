@@ -2,18 +2,29 @@ const ExerciseInfo = require('../models/exerciseInfo');
 
 module.exports = {
     show(req, res, next) {
+        console.log('------------from exercise info-----------');
         ExerciseInfo.find({})
             .then(exerciseInfo => {
-                res.send(exerciseInfo)
+                return res.send(exerciseInfo)
             })
             .catch(next);
     },
 
     create(req, res, next) {
         const exerciseInfoProps = req.body;
-        ExerciseInfo.create(exerciseInfoProps)
-            .then(exerciseInfo => res.send(exerciseInfo))
-            .catch(next);
+        const { prop } = req.query;
+        if (prop === 'exercises') {
+            ExerciseInfo.find({ '_id': { $in: exerciseInfoProps }})
+                .then(exerciseInfos => {
+                    return res.send(exerciseInfos);
+                })
+                .catch(next);
+        }
+        else {
+            ExerciseInfo.create(exerciseInfoProps)
+                .then(exerciseInfo => res.send(exerciseInfo))
+                .catch(next);
+        }
     },
 
     edit(req, res, next) {

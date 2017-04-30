@@ -9,7 +9,8 @@ const SetSchema = new Schema({
     actual: {
         weight: Number,
         number: Number
-    }
+    },
+    //_id: String
 });
 
 SetSchema.virtual('weightReward')
