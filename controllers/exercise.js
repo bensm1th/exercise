@@ -27,6 +27,7 @@ module.exports = {
     },
 
     edit(req, res, next) {
+      
         const exerciseId = req.params.id;
         const exerciseProps = req.body;
         const { subdoc, id, prop } = req.query;
@@ -42,20 +43,36 @@ module.exports = {
                         });
                 })
             .catch(next);   
-    } else {
-        const massagedProps = prop === "sets" ? { $push: { 'sets': exerciseProps.sets } } : exerciseProps;
-        //I should do a multiple save on the sets, then the next one
-        Exercise.findByIdAndUpdate(exerciseId, massagedProps, { new: true })
-            .then(exercise => {
-                Exercise.findById(exerciseId)
-                    .populate('exerciseInfo sets')
-                    .then(data => {
-                        res.send(data);
-                    });
-            })
-            .catch(next);
-    }
-},
+        } else {
+            const massagedProps = prop === "sets" ? { $push: { 'sets': exerciseProps.sets } } : exerciseProps;
+            //I should do a multiple save on the sets, then the next one
+            Exercise.findByIdAndUpdate(exerciseId, massagedProps, { new: true })
+                .then(exercise => {
+                    Exercise.findById(exerciseId)
+                        .populate('exerciseInfo sets')
+                        .then(data => {
+                            res.send(data);
+                        });
+                })
+                .catch(next);
+        }
+    },
+
+    editMultiple(req, res, next) {
+        const exerciseProps = req.body;
+        const finished = exerciseProps.length;
+        let count = 0;
+        exerciseProps.forEach(exercise => {
+            Exercise.findByIdAndUpdate(exercise._id, exercise, { new: true })
+                .then(_exercise => {
+                    count++;
+                    if (count === finished) {
+                        return res.status(200).send({ message: 'exercises have been successfully saved'})
+                    }
+                })
+                .catch(next);
+        });
+    },
 
     delete(req, res, next) {
         const exerciseId = req.params.id;

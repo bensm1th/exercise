@@ -10,23 +10,13 @@ const SetSchema = new Schema({
         weight: Number,
         number: Number
     },
-    //_id: String
 });
 
-SetSchema.virtual('weightReward')
+SetSchema.virtual('reward')
     .get(function() {
-        if (this.goals.weight === this.actual.weight) {
-            return true;
-        }
-        return false;
-    })
-    .set(function() {
-
-    });
-
-SetSchema.virtual('numberReward')
-    .get(function() {
-        if(this.goals.number === this.actual.number) {
+        const weightsMet = this.actual.weight >= this.goals.weight;
+        const setsMet = this.actual.number >= this.goals.number;
+        if (weightsMet && setsMet) {
             return true;
         }
         return false;

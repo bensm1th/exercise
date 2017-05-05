@@ -24,21 +24,23 @@ ExerciseSchema.virtual('setsNumber')
 
 ExerciseSchema.pre('save', function(next) {
     const Set = mongoose.model('set');
-    
     Set.find({ _id: { $in: this.sets }})
         .then(sets => {
-            
-            const weightRewards = sets.filter(set => {
-                return set.weightReward;
-            }).length;
-            const setRewards = sets.filter(set => {
-                return set.numberReward;
-            }).length;
-            
-            const pointsPerReward = this.exerciseInfo.points ? this.exerciseInfo.points : 1;
-            const pointsEarned = (setRewards + weightRewards) * pointsPerReward;
-            this.pointsEarned = pointsEarned;
-            next();
+            const rewardsMet = sets.reduce((init, set) => {
+                if (set.reward) {
+                    return init + 1;
+                }
+                return init;
+            }, 0);
+            const ExerciseInfo = mongoose.model('exerciseInfo');
+            ExerciseInfo.findOne({ _id: this.exerciseInfo})
+                .then(_exerciseInfo => {
+                    const pointsPerReward = _exerciseInfo.points;
+                    const pointsEarned = (rewardsMet) * pointsPerReward;
+                    this.pointsEarned = pointsEarned;
+                    next();
+                })
+                .catch(next);
         });
 });
 

@@ -12,8 +12,12 @@ const WorkoutSchema = new Schema({
     },
     name: String,
     description: String,
-    pointsEarned: Number
-});
+    pointsEarned: Number,
+    finished: {
+        type: Boolean,
+        default: false
+    },
+}, { timestamps: true });
 
 WorkoutSchema.pre('save', function(next) {
     const Exercise = mongoose.model('exercise');

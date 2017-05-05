@@ -4,6 +4,55 @@ const ExerciseInfo = require('../models/exerciseInfo');
 const Workout = require('../models/workout');
 
 module.exports = {
+    updateWorkout(req, res, next) {
+        
+        const workoutProps = req.body;
+        const finished = workoutProps.exercises.length;
+        let iterations = 0;
+        delete workoutProps._id;
+        workoutProps.finished = true;
+        const updateWorkoutRoutine = (props) => {
+            const { exercises } = props;
+            let exerciseIds = [];
+            exercises.map(exercise => {
+                delete exercise._id;
+                const sets = exercise.sets.map(set => {
+                    delete set._id;
+                    return set;
+                });
+                exercise.sets = [];
+                Set.insertMany(sets)
+                    .then(result => {
+                        result.forEach(set => {
+                            exercise.sets.push(set._id);
+                        });
+                        Exercise.create(exercise)
+                            .then(newExercise => {
+                                iterations += 1;
+                                exerciseIds.push(newExercise);
+                                if (iterations === finished) {
+                                    workout = Object.assign({}, workoutProps, { exercises: exerciseIds });
+                                    Workout.create(workout)
+                                        .then(newWorkout => {
+                                            Workout.findOne({ _id: newWorkout._id})
+                                                .populate({
+                                                    path: 'user exercises',
+                                                    populate: {
+                                                        path: 'exerciseInfo sets',
+                                                    }
+                                                })
+                                            .then(_workout => {
+                                                res.send(_workout);
+                                            })
+                                        })
+                                        .catch(next);
+                                }
+                            });
+                    });
+            });
+        };
+        updateWorkoutRoutine(workoutProps);
+    },
     createWorkout(req, res, next) {
         const { createForm: { name, description }, exercises } = req.body;
         const finished = exercises.length;
@@ -35,8 +84,6 @@ module.exports = {
                                 if (iterations === finished) {
                                     Workout.create({ name, description, exercises: exerciseIds })
                                         .then(workout =>{ 
-                                            console.log('--------workout--------');
-                                            console.log(workout);
                                             res.send(workout)})
                                         .catch(next);
                                 }

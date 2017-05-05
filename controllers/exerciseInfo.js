@@ -2,7 +2,6 @@ const ExerciseInfo = require('../models/exerciseInfo');
 
 module.exports = {
     show(req, res, next) {
-        console.log('------------from exercise info-----------');
         ExerciseInfo.find({})
             .then(exerciseInfo => {
                 return res.send(exerciseInfo)

@@ -7,7 +7,7 @@ const ExerciseInfoSchema = new Schema({
     description: String,
     points: {
         type: Number,
-        default: 0
+        default: 1
     }
 });
 
