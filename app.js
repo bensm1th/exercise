@@ -13,7 +13,7 @@ const secret = require('./secrets/secrets');
 mongoose.Promise = global.Promise;
 
 if(process.env.NODE_ENV !== 'test') {
-    mongoose.connect(secret.db);
+    mongoose.connect('mongodb://ben:smith@ds133311.mlab.com:33311/weightliftingapp');
 }
 
 app.use(bodyParser.json());
