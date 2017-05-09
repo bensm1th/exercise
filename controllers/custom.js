@@ -2,10 +2,10 @@ const Exercise = require('../models/exercise');
 const Set = require('../models/set');
 const ExerciseInfo = require('../models/exerciseInfo');
 const Workout = require('../models/workout');
+const User = require('../models/user');
 
 module.exports = {
     updateWorkout(req, res, next) {
-        
         const workoutProps = req.body;
         const finished = workoutProps.exercises.length;
         let iterations = 0;
@@ -32,6 +32,8 @@ module.exports = {
                                 exerciseIds.push(newExercise);
                                 if (iterations === finished) {
                                     workout = Object.assign({}, workoutProps, { exercises: exerciseIds });
+                                    delete workout.createdAt
+                                    delete workout.updatedAt
                                     Workout.create(workout)
                                         .then(newWorkout => {
                                             Workout.findOne({ _id: newWorkout._id})
@@ -55,9 +57,10 @@ module.exports = {
     },
     createWorkout(req, res, next) {
         const { createForm: { name, description }, exercises } = req.body;
+        const { id } = req.query;
         const finished = exercises.length;
         let iterations = 0;
-        const createWorkoutRoutine = (exercises) => {
+        const createWorkoutRoutine = (exercises, userId) => {
             let exerciseIds = [];
             exercises.map(exercise => {
                 delete exercise.setsVisibility;
@@ -82,7 +85,7 @@ module.exports = {
                                 iterations += 1;
                                 exerciseIds.push(newExercise._id);
                                 if (iterations === finished) {
-                                    Workout.create({ name, description, exercises: exerciseIds })
+                                    Workout.create({ name, description, exercises: exerciseIds, user: userId })
                                         .then(workout =>{ 
                                             res.send(workout)})
                                         .catch(next);
@@ -91,6 +94,9 @@ module.exports = {
                     })
             });
         }
-        createWorkoutRoutine(exercises);
+        User.findOne({ id: id })
+            .then(user => {
+                createWorkoutRoutine(exercises, user._id);
+            });
     }
 }

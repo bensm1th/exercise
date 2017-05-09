@@ -2,36 +2,46 @@ const Exercise = require('../models/exercise');
 const Set = require('../models/set');
 const ExerciseInfo = require('../models/exerciseInfo');
 const Workout = require('../models/workout');
+const User = require('../models/user');
 
 module.exports = {
     show(req, res, next) {
-        Workout.find({})
-            .populate({
-                path: 'exercises',
-                populate: {
-                    path: 'exerciseInfo sets'
-                }
-            })
-            .then(workouts => {
-                res.send(workouts);
-            })
-            .catch(next);
+        const { id } = req.query;
+        User.findOne({ id: id })
+            .then(user => {
+            Workout.find({ user: user._id })
+                .populate({
+                    path: 'exercises',
+                    populate: {
+                        path: 'exerciseInfo sets'
+                    }
+                })
+                .then(workouts => {
+                    res.send(workouts);
+                })
+        })
+        .catch(next);
     },
 
     create(req, res, next) {
-        workoutProps = req.body;   
+        const workoutProps = req.body;   
         const workout = new Workout(workoutProps);
-        workout.save()
-            .then(workout => {
-                Workout.findById(workout._id)
-                    .populate({
-                        path: 'exercises user',
-                        populate: {
-                            path: 'exerciseInfo sets'
-                        }
-                    })
-                    .then(foundWorkout => {
-                        res.send(foundWorkout);
+        const { id } = req.query;
+        User.findOne({ id: id })
+            .then(user => {
+                workout.user = user._id;
+                workout.save()
+                    .then(workout => {
+                        Workout.findById(workout._id)
+                            .populate({
+                                path: 'exercises user',
+                                populate: {
+                                    path: 'exerciseInfo sets'
+                                }
+                            })
+                            .then(foundWorkout => {
+                                res.send(foundWorkout);
+                            });
                     });
             })
             .catch(next);             

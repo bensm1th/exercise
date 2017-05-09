@@ -15,7 +15,12 @@ const UserSchema = new Schema({
     workouts: [{
         type: Schema.Types.ObjectId,
         ref: 'workout'
-    }]
+    }],
+    id: {
+        type: String,
+        required: true,
+        unique: true
+    }
 });
 
 module.exports = mongoose.model('user', UserSchema);

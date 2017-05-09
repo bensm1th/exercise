@@ -8,11 +8,12 @@ const workoutRoutes = require('./routes/workoutRoutes');
 const userRoutes = require('./routes/userRoutes');
 const customRoutes = require('./routes/customRoutes');
 const app = express();
+const secret = require('./secrets/secrets');
 
 mongoose.Promise = global.Promise;
 
 if(process.env.NODE_ENV !== 'test') {
-    mongoose.connect('mongodb://localhost/exercise');
+    mongoose.connect(secret.db);
 }
 
 app.use(bodyParser.json());

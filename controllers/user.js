@@ -10,11 +10,28 @@ module.exports = {
             .catch(next);
     },
 
+    getById(req, res, next) {
+        User.findOne({ id: req.params.id })
+            .then(user => {
+                console.log(user);
+                res.send(user);
+            })
+            .catch(next);
+    },
+
     create(req, res, next) {
         const userProps = req.body;
-        const user = new User(userProps);
-        user.save()
-            .then(savedUser => res.send(savedUser))
+        const { id } = userProps;
+        User.findOne({ id: id })
+            .then(user => {
+                if (user) {
+                    return res.send(user);
+                } else {
+                    const newUser = new User(userProps);
+                    newUser.save()
+                        .then(savedUser => res.send(savedUser))
+                }
+            })
             .catch(next);
     },
 

@@ -8,6 +8,10 @@ const ExerciseInfoSchema = new Schema({
     points: {
         type: Number,
         default: 1
+    },
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'user'
     }
 });
 
