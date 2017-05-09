@@ -8,7 +8,6 @@ const workoutRoutes = require('./routes/workoutRoutes');
 const userRoutes = require('./routes/userRoutes');
 const customRoutes = require('./routes/customRoutes');
 const app = express();
-const secret = require('./secrets/secrets');
 
 mongoose.Promise = global.Promise;
 
