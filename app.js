@@ -7,7 +7,9 @@ const exerciseInfoRoutes = require('./routes/exerciseInfoRoutes');
 const workoutRoutes = require('./routes/workoutRoutes');
 const userRoutes = require('./routes/userRoutes');
 const customRoutes = require('./routes/customRoutes');
+const authRoutes = require('./routes/authRoutes');
 const app = express();
+const secret = require('./secrets/secrets');
 
 mongoose.Promise = global.Promise;
 
@@ -23,6 +25,7 @@ setRoutes(app);
 workoutRoutes(app);
 userRoutes(app);
 customRoutes(app);
+authRoutes(app);
 
 app.use((err, req, res, next) => {
     res.status(422).send({ error: err.message })
