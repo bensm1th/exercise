@@ -11,7 +11,7 @@ function tokenForUser(user) {
 exports.signin = function(req, res, next) {
     // User has already had their email and password auth'ed, we just need to give them a token
     // we have access to the user through req.user.  Remember, this is just a callback function to the express route.
-    res.send({ token: tokenForUser(req.user), id: req.user._id });
+    res.send({ token: tokenForUser(req.user), id: req.user.id });
 }
 
 exports.signup = function(req, res, next) {
@@ -24,9 +24,12 @@ exports.signup = function(req, res, next) {
     User.findOne({ email }, function(err, existingUser) {
         if (err) { return next(err) }
         // if a user with email does exist, return an error
-        if (existingUser || req.body.secret !== secret.secret) {
-            const error = {error: 'There were errors'}
+        if (existingUser) {
+            const error = {error: 'A user with that email already exists' }
             return res.status(422).send(error);
+        }
+        if (req.body.secret !== secret.secret) {
+            return res.status(422).send({ error: 'There were errors '});
         }
          // if a user with email does not exist, create and save user record
         const user = new User({ 

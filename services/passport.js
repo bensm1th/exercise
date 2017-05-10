@@ -11,8 +11,6 @@ const localLogin = new LocalStrategy(localOptions, function(email, password, don
   // if it is the correct email and password
   // otherwise, call done with false
   User.findOne({ email: email }, function(err, user) {
-    console.log('----- from local login ---------');
-    console.log(user);
     if (err) { return done(err); }
     if (!user) { return done(null, false); }
 
