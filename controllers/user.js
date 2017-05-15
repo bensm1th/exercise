@@ -13,7 +13,6 @@ module.exports = {
     getById(req, res, next) {
         User.findOne({ id: req.params.id })
             .then(user => {
-                console.log(user);
                 res.send(user);
             })
             .catch(next);

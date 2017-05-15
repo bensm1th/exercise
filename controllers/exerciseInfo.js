@@ -1,4 +1,6 @@
 const ExerciseInfo = require('../models/exerciseInfo');
+const Exercise = require('../models/exercise');
+const Workout = require('../models/workout');
 const User = require('../models/user');
 
 module.exports = {
@@ -9,7 +11,6 @@ module.exports = {
             .then(user => {
                 ExerciseInfo.find({ user: user._id })
                     .then(exerciseInfo => {
-                        console.log(exerciseInfo);
                         return res.send(exerciseInfo);
                     });
             })
@@ -53,9 +54,9 @@ module.exports = {
 
     delete(req, res, next) {
         const exerciseInfoId = req.params.id;
-        ExerciseInfo.findByIdAndRemove(exerciseInfoId)
-            .then(result => {
-                res.send(result);
+        ExerciseInfo.findOneAndUpdate({ _id: exerciseInfoId }, { valid: false } )
+            .then(exerciseInfo => {
+                res.send(exerciseInfo);
             })
             .catch(next);
     }
