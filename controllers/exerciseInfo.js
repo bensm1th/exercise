@@ -33,11 +33,10 @@ module.exports = {
                     exerciseInfoProps.user = user._id;
                     const exerciseInfo = new ExerciseInfo(exerciseInfoProps);
                     exerciseInfo.save()
-                        .then(_exerciseInfo =>{ 
-                            ExerciseInfo.findById(_exerciseInfo._id)
-                                .then(
-                                    res.send(exerciseInfo)
-                                );
+                        .then(_exerciseInfo => { 
+                            console.log('--saved exercise --');
+                            console.log(_exerciseInfo);
+                            res.send(_exerciseInfo);
                         });
                 })
                 .catch(next);
